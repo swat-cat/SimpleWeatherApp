@@ -23,11 +23,8 @@ public class WeatherModel {
     }
 
     public Observable<WeatherData> resetModel(String adrress){
-        Map<String, String> data = new HashMap<>();
-        data.put("q", adrress);
-        data.put("appid", Constants.API_KEY);
         return weatherApi
-                .getCurrentWeather(data)
+                .getCurrentWeather(adrress)
                 .retryWhen(new RetryWithDelay(5,1000))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

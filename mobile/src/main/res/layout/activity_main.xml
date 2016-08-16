@@ -17,10 +17,20 @@
         android:layout_centerHorizontal="true"
         android:textSize="24sp"
         android:text="@string/weather_outside"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/city"
+        android:paddingTop="12dp"
+        android:layout_below="@+id/label"
+        android:layout_centerHorizontal="true"
+        android:textSize="22sp"
+        android:text="Nikolaev"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/city"
         android:orientation="vertical"
         android:id="@+id/tempreture_frame">
 
@@ -84,15 +94,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="32dp"
+        android:layout_marginBottom="32dp"
         android:id="@+id/synchronize_btn"
         android:src="@mipmap/synchronize"/>
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:id="@+id/progress"/>
 
 </RelativeLayout>
