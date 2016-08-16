@@ -2,7 +2,6 @@ package com.mermakov.simpleweatherapp.current_weather;
 
 public interface CurrentWeatherContract {
     interface View{
-        void showProgressIndicator(boolean show);
         void showUI(boolean show);
         void setupTemperature(float temperature);
         void setupWeatherStatus(String status);

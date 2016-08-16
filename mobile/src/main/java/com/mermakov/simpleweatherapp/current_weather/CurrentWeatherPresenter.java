@@ -1,30 +1,47 @@
 package com.mermakov.simpleweatherapp.current_weather;
 
-import android.widget.Toast;
+import android.location.Location;
+import android.util.Log;
 
-import com.mermakov.simpleweatherapp.App;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.mermakov.simpleweatherapp.data.LocationModel;
 import com.mermakov.simpleweatherapp.data.WeatherModel;
 import com.mermakov.simpleweatherapp.data.dto.WeatherData;
 
 import rx.Subscriber;
+import rx.functions.Action1;
 
 public class CurrentWeatherPresenter implements CurrentWeatherContract.UserActionEvents{
     private static final String TAG = CurrentWeatherPresenter.class.getSimpleName();
 
-    private CurrentWeatherContract.View view;
-    private WeatherModel model;
+    private final CurrentWeatherContract.View view;
+    private WeatherModel weatherModel;
+    private LocationModel locationModel;
 
-    public CurrentWeatherPresenter(CurrentWeatherContract.View view) {
+    public CurrentWeatherPresenter(final CurrentWeatherContract.View view, GoogleApiClient googleApiClient) {
         this.view = view;
-        view.showProgressIndicator(true);
         view.showUI(false);
-        model = new WeatherModel();
+        weatherModel = new WeatherModel();
+        locationModel = new LocationModel(googleApiClient);
         resetCurrentWeather();
+        ((CurrentWeatherView)view).syncBtnClick().subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                locationModel.getLocation().subscribe(new Action1<Location>() {
+                    @Override
+                    public void call(Location location) {
+                        Log.d(TAG,"lat: "+location.getLatitude()+"lang: "+location.getLongitude());
+                    }
+                });
+                resetCurrentWeather();
+            }
+        });
     }
 
     @Override
     public void resetCurrentWeather() {
-        model.resetModel("London")
+        ((CurrentWeatherView)view).syncAnimation();
+        weatherModel.resetModel("London")
                 .subscribe(new Subscriber<WeatherData>() {
                     @Override
                     public void onCompleted() {
@@ -33,14 +50,13 @@ public class CurrentWeatherPresenter implements CurrentWeatherContract.UserActio
 
                     @Override
                     public void onError(Throwable e) {
-                        view.showProgressIndicator(false);
+                        Log.d(TAG, e.getLocalizedMessage());
                         view.showUI(true);
-                        Toast.makeText(App.getInstance().getApplicationContext(),"Internet connectivity error",Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onNext(WeatherData weatherData) {
-                        view.showProgressIndicator(false);
+                        view.showUI(true);
                         if (weatherData.getMain()!=null) {
                             if (weatherData.getMain().getTemp()!=null) {
                                 view.setupTemperature(weatherData.getMain().getTemp());

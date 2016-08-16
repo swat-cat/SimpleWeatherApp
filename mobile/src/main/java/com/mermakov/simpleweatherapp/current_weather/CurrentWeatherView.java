@@ -2,12 +2,15 @@ package com.mermakov.simpleweatherapp.current_weather;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.mermakov.simpleweatherapp.R;
 import com.mermakov.simpleweatherapp.Utils.TemperatureFormatter;
 
@@ -25,7 +28,7 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
     private TextView pressure;
     private TextView himidity;
     private ImageView syncButton;
-    private ProgressBar progressBar;
+
 
     public CurrentWeatherView(Activity activity) {
         this.activity = activity;
@@ -40,28 +43,12 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
         pressure = (TextView)root.findViewById(R.id.pressure);
         himidity = (TextView)root.findViewById(R.id.humidity);
         syncButton = (ImageView)root.findViewById(R.id.synchronize_btn);
-        progressBar = (ProgressBar)root.findViewById(R.id.progress);
-    }
-
-    public Observable<View> setupSyncBtnListener(){
-        return Observable.create(new Observable.OnSubscribe<View>() {
+        syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void call(final Subscriber<? super View> subscriber) {
-               syncButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (subscriber.isUnsubscribed()) return;
-                        subscriber.onNext(v);
-                    }
-                });
+            public void onClick(View v) {
+                Log.d(TAG, "click");
             }
         });
-    }
-
-    @Override
-    public void showProgressIndicator(boolean show) {
-        if(show)progressBar.setVisibility(View.VISIBLE);
-        else progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -94,16 +81,24 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
 
     @Override
     public void setupWindSpeed(float speed) {
-        this.windSpeed.setText(String.valueOf(speed));
+        this.windSpeed.setText(root.getResources().getString(R.string.wind_speed,String.valueOf(speed)));
     }
 
     @Override
     public void setupPressure(float pressure) {
-        this.pressure.setText(String.valueOf(pressure));
+        this.pressure.setText(root.getResources().getString(R.string.pressure,String.valueOf(pressure)));
     }
 
     @Override
     public void setupHumidity(float humidity) {
-        this.himidity.setText(String.valueOf(humidity));
+        this.himidity.setText(root.getResources().getString(R.string.humidity,String.valueOf(humidity)));
+    }
+
+    public Observable<Void> syncBtnClick(){
+        return RxView.clicks(syncButton);
+    }
+
+    public void syncAnimation(){
+        syncButton.startAnimation(AnimationUtils.loadAnimation(activity,R.anim.rotate));
     }
 }
