@@ -22,6 +22,7 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
 
     private Activity activity;
     private View root;
+    private TextView city;
     private TextView temperature;
     private TextView status;
     private TextView windSpeed;
@@ -37,23 +38,19 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
     }
 
     private void initUI(){
+        city = (TextView)root.findViewById(R.id.city);
         temperature = (TextView)root.findViewById(R.id.temperature);
         status = (TextView)root.findViewById(R.id.weather_status);
         windSpeed = (TextView)root.findViewById(R.id.wind_speed);
         pressure = (TextView)root.findViewById(R.id.pressure);
         himidity = (TextView)root.findViewById(R.id.humidity);
         syncButton = (ImageView)root.findViewById(R.id.synchronize_btn);
-        syncButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "click");
-            }
-        });
     }
 
     @Override
     public void showUI(boolean show) {
         if(show){
+            city.setVisibility(View.VISIBLE);
             temperature.setVisibility(View.VISIBLE);
             status.setVisibility(View.VISIBLE);
             windSpeed.setVisibility(View.VISIBLE);
@@ -61,12 +58,18 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
             himidity.setVisibility(View.VISIBLE);
         }
         else {
+            city.setVisibility(View.GONE);
             temperature.setVisibility(View.GONE);
             status.setVisibility(View.GONE);
             windSpeed.setVisibility(View.GONE);
             pressure.setVisibility(View.GONE);
             himidity.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void setupCity(String city) {
+        this.city.setText(city);
     }
 
     @Override
@@ -94,11 +97,17 @@ public class CurrentWeatherView implements CurrentWeatherContract.View {
         this.himidity.setText(root.getResources().getString(R.string.humidity,String.valueOf(humidity)));
     }
 
-    public Observable<Void> syncBtnClick(){
-        return RxView.clicks(syncButton);
+    @Override
+    public void startSyncAnimation() {
+        syncButton.startAnimation(AnimationUtils.loadAnimation(activity,R.anim.rotate));
     }
 
-    public void syncAnimation(){
-        syncButton.startAnimation(AnimationUtils.loadAnimation(activity,R.anim.rotate));
+    @Override
+    public void stopSyncAnimation() {
+        syncButton.clearAnimation();
+    }
+
+    public Observable<Void> syncBtnClick(){
+        return RxView.clicks(syncButton);
     }
 }
