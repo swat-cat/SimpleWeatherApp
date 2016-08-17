@@ -23,7 +23,7 @@ public class LocationModel {
 
     private LocationManager locationManager;
 
-    public LocationModel(GoogleApiClient googleApiClient) {
+    public LocationModel() {
         locationManager = (LocationManager) App.getInstance().getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
     }
@@ -65,11 +65,7 @@ public class LocationModel {
                 else {
                     subscriber.onError(new NoAvailableProviderException());
                 }
-
-                if (Looper.myLooper() == null)
-                {
-                    Looper.prepare();
-                }
+                Looper.prepare();
 
                 try {
                     locationManager.requestSingleUpdate(locationProvider,
