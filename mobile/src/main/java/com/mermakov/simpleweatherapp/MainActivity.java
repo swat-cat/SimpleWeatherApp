@@ -13,47 +13,15 @@ import com.mermakov.simpleweatherapp.current_weather.CurrentWeatherContract;
 import com.mermakov.simpleweatherapp.current_weather.CurrentWeatherPresenter;
 import com.mermakov.simpleweatherapp.current_weather.CurrentWeatherView;
 
-public class MainActivity extends Activity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends Activity{
     private CurrentWeatherContract.View view;
     private CurrentWeatherContract.UserActionEvents presenter;
-    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
         view = new CurrentWeatherView(this);
-        presenter = new CurrentWeatherPresenter(view,googleApiClient);
-    }
-
-    protected void onStart() {
-        googleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        googleApiClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        presenter = new CurrentWeatherPresenter(view);
     }
 }
